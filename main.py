@@ -11,6 +11,192 @@ app = FastAPI()
 
 
 # ============================================================
+# PANTALLA INICIAL
+# ============================================================
+
+@app.get("/", response_class=HTMLResponse)
+async def home():
+
+    return """
+    <html>
+    <head>
+
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0">
+
+        <title>Creador de playlists</title>
+
+        <style>
+
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 18px;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100svh;
+
+                padding: 10px;
+
+                position: relative;
+            }
+
+            /* Fondo + overlay compatible con iPhone */
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+
+                background-image: url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+
+                box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.5);
+
+                z-index: -1;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 600px;
+            }
+
+            /* Inputs */
+            input, textarea {
+                width: 100%;
+                font-size: 18px;
+                padding: 10px;
+                box-sizing: border-box;
+                border-radius: 6px;
+                border: none;
+            }
+
+            /* Textarea */
+            textarea {
+                height: 250px;
+                resize: vertical;
+            }
+
+            /* Botones */
+            button {
+                font-size: 18px;
+                padding: 12px 16px;
+                margin-top: 10px;
+                width: 100%;
+                border-radius: 6px;
+                border: none;
+                cursor: pointer;
+            }
+
+            /* Textos */
+            h1, label {
+                color: white;
+                font-weight: bold;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            /* Iconos */
+            .icon {
+                width: 20px;
+                vertical-align: middle;
+                margin-right: 8px;
+            }
+
+            /* MOBILE REAL */
+            @media (max-width: 600px) {
+
+                body {
+                    align-items: flex-start;
+                    padding: 15px;
+                    font-size: 20px;
+                }
+
+                .container {
+                    max-width: 100%;
+                }
+
+                input, textarea {
+                    font-size: 20px;
+                    padding: 12px;
+                }
+
+                textarea {
+                    height: 50vh;
+                }
+
+                button {
+                    font-size: 20px;
+                    padding: 14px;
+                }
+
+                h1 {
+                    font-size: 24px;
+                }
+            }
+
+        </style>
+    </head>
+
+    <body>
+
+    <div class="container">
+
+        <h1>Creador de playlists</h1>
+
+        <form action="/buscar_canciones/" method="post">
+
+            <label>
+                Nombre de la playlist
+            </label>
+
+            <br><br>
+
+            <input
+                type="text"
+                name="nombre_playlist"
+                required
+            >
+
+            <br><br>
+
+            <label>
+                Canciones (una por línea)
+            </label>
+
+            <br><br>
+
+            <textarea
+                name="canciones"
+                required
+                placeholder="Ejemplo:
+
+Nada que perder
+Chica de ayer
+Billie Jean
+Heroes - David Bowie"
+            ></textarea>
+
+            <br>
+
+            <button type="submit">
+                Buscar canciones
+            </button>
+
+        </form>
+
+    </div>
+
+    </body>
+    </html>
+    """
+
+
+# ============================================================
 # OBTENER ACCESS TOKEN
 # ============================================================
 
@@ -53,242 +239,6 @@ def obtener_access_token():
 
 
 # ============================================================
-# PANTALLA INICIAL
-# ============================================================
-
-@app.get("/", response_class=HTMLResponse)
-async def home():
-
-    return """
-<html>
-
-<head>
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<link rel="icon"
-      href="https://losperrostratos.es/wp-content/uploads/2025/11/cropped-bk2a2736.jpg">
-
-<title>Playlist Creator</title>
-
-<style>
-
-/* ============================================================
-   GENERAL
-   ============================================================ */
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 18px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    min-height: 100svh;
-
-    padding: 10px;
-
-    position: relative;
-
-    margin: 0;
-}
-
-/* ============================================================
-   FONDO
-   ============================================================ */
-
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-
-    background-image:
-        url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    box-shadow:
-        inset 0 0 0 1000px rgba(0,0,0,0.5);
-
-    z-index: -1;
-}
-
-/* ============================================================
-   CONTENEDOR
-   ============================================================ */
-
-.container {
-    width: 100%;
-    max-width: 600px;
-}
-
-/* ============================================================
-   TEXTOS
-   ============================================================ */
-
-h1 {
-    text-align: center;
-    color: white;
-    font-weight: bold;
-}
-
-label {
-    color: white;
-    font-weight: bold;
-}
-
-/* ============================================================
-   INPUTS
-   ============================================================ */
-
-input,
-textarea {
-    width: 100%;
-
-    font-size: 18px;
-
-    padding: 10px;
-
-    box-sizing: border-box;
-
-    border-radius: 6px;
-
-    border: none;
-}
-
-textarea {
-    height: 250px;
-    resize: vertical;
-}
-
-/* ============================================================
-   BOTONES
-   ============================================================ */
-
-button {
-    font-size: 18px;
-
-    padding: 12px 16px;
-
-    margin-top: 10px;
-
-    width: 100%;
-
-    border-radius: 6px;
-
-    border: none;
-
-    cursor: pointer;
-}
-
-/* ============================================================
-   MÓVIL
-   ============================================================ */
-
-@media (max-width: 600px) {
-
-    body {
-        align-items: flex-start;
-
-        padding: 15px;
-
-        font-size: 20px;
-    }
-
-    .container {
-        max-width: 100%;
-    }
-
-    input,
-    textarea {
-        font-size: 20px;
-        padding: 12px;
-    }
-
-    textarea {
-        height: 50vh;
-    }
-
-    button {
-        font-size: 20px;
-        padding: 14px;
-    }
-
-    h1 {
-        font-size: 24px;
-    }
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-<div class="container">
-
-    <h1>Playlist Creator</h1>
-
-    <form action="/buscar_canciones/" method="post">
-
-        <label>
-            Nombre de la playlist
-        </label>
-
-        <br><br>
-
-        <input
-            type="text"
-            name="nombre_playlist"
-            required
-        >
-
-        <br><br>
-
-        <label>
-            Canciones (una por línea)
-        </label>
-
-        <br><br>
-
-        <textarea
-            name="canciones"
-            required
-            placeholder="Ejemplo:
-
-Nada que perder
-Chica de ayer
-Billie Jean
-Heroes - David Bowie"
-        ></textarea>
-
-        <br>
-
-        <button type="submit">
-            Buscar canciones
-        </button>
-
-    </form>
-
-</div>
-
-</body>
-
-</html>
-"""
-
-
-# ============================================================
 # BUSCAR CANCIONES
 # ============================================================
 
@@ -303,19 +253,9 @@ async def buscar_canciones(
     if error:
 
         return HTMLResponse(f"""
-        <html>
-        <body>
-
-            <h2>Error obteniendo acceso a Spotify</h2>
-
-            <pre>{html.escape(error)}</pre>
-
-            <p>
-                <a href="/">Volver</a>
-            </p>
-
-        </body>
-        </html>
+        <h2>Error obteniendo acceso a Spotify</h2>
+        <pre>{html.escape(error)}</pre>
+        <p><a href="/">Volver</a></p>
         """)
 
     lista_canciones = [
@@ -328,10 +268,7 @@ async def buscar_canciones(
 
         return HTMLResponse("""
         <h2>No se han introducido canciones</h2>
-
-        <p>
-            <a href="/">Volver</a>
-        </p>
+        <p><a href="/">Volver</a></p>
         """)
 
     headers = {
@@ -364,10 +301,10 @@ async def buscar_canciones(
 
         data = search.json()
 
-        tracks = (
-            data
-            .get("tracks", {})
-            .get("items", [])
+        tracks = data.get(
+            "tracks", {}
+        ).get(
+            "items", []
         )
 
         opciones = []
@@ -398,6 +335,7 @@ async def buscar_canciones(
 
     bloques = ""
 
+    # Solo se mostrará "Desliza →" una vez
     primer_desliza = True
 
     for resultado in resultados:
@@ -475,7 +413,10 @@ async def buscar_canciones(
                 </div>
             """
 
-            # Desliza → solo una vez
+            # ------------------------------------------------
+            # "Desliza →" solo aparece una vez
+            # ------------------------------------------------
+
             if len(opciones) > 3 and primer_desliza:
 
                 bloques += """
@@ -497,364 +438,262 @@ async def buscar_canciones(
 
     return HTMLResponse(f"""
 
-<html>
+    <html>
 
-<head>
+    <head>
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0">
 
-<link rel="icon"
-      href="https://losperrostratos.es/wp-content/uploads/2025/11/cropped-bk2a2736.jpg">
+        <title>Seleccionar canciones</title>
 
-<title>Seleccionar canciones</title>
+        <style>
 
-<style>
+            * {{
+                box-sizing: border-box;
+            }}
 
-/* ============================================================
-   GENERAL
-   ============================================================ */
+            body {{
+                font-family: Arial, Helvetica, sans-serif;
+                max-width: 700px;
+                margin: auto;
+                padding: 20px;
+                color: #222;
+            }}
 
-* {{
-    box-sizing: border-box;
-}}
+            h1 {{
+                text-align: center;
+                margin-bottom: 8px;
+            }}
 
-body {{
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 18px;
+            .intro {{
+                text-align: center;
+                color: #666;
+                margin-bottom: 20px;
+            }}
 
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+            /* =================================================
+               CADA CARRUSEL
+               ================================================= */
 
-    min-height: 100svh;
+            .cancion {{
+                margin-bottom: 12px;
+            }}
 
-    padding: 20px;
+            .carrusel {{
+                display: flex;
+                gap: 8px;
 
-    position: relative;
+                overflow-x: auto;
 
-    margin: 0;
-}}
+                scroll-snap-type: x mandatory;
 
-/* ============================================================
-   FONDO
-   ============================================================ */
+                padding: 2px 2px 8px 2px;
 
-body::before {{
-    content: "";
-    position: fixed;
-    inset: 0;
+                scrollbar-width: thin;
+            }}
 
-    background-image:
-        url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+            /* =================================================
+               TARJETAS
+               ================================================= */
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+            .opcion {{
+                flex: 0 0 calc((100% - 16px) / 3);
 
-    box-shadow:
-        inset 0 0 0 1000px rgba(0,0,0,0.5);
+                min-height: 72px;
 
-    z-index: -1;
-}}
+                border: 1px solid #ddd;
+                border-radius: 7px;
 
-/* ============================================================
-   CONTENEDOR
-   ============================================================ */
+                padding: 9px;
 
-.container {{
-    width: 100%;
-    max-width: 600px;
-}}
+                cursor: pointer;
 
-/* ============================================================
-   TÍTULOS
-   ============================================================ */
+                scroll-snap-align: start;
 
-h1 {{
-    text-align: center;
-    color: white;
-    font-weight: bold;
+                background: white;
 
-    margin-top: 0;
-    margin-bottom: 8px;
-}}
+                display: flex;
+                align-items: flex-start;
 
-.intro {{
-    text-align: center;
+                gap: 7px;
 
-    color: white;
+                transition:
+                    background 0.15s ease,
+                    border 0.15s ease;
+            }}
 
-    margin-top: 0;
-    margin-bottom: 20px;
-}}
+            .opcion:hover {{
+                background: #f7f7f7;
+            }}
 
-/* ============================================================
-   CADA CARRUSEL
-   ============================================================ */
+            /* =================================================
+               OPCIÓN SELECCIONADA
+               ================================================= */
 
-.cancion {{
-    margin-bottom: 12px;
-}}
+            .opcion:has(input:checked) {{
+                border: 2px solid #7b2727;
+                background: #f5e6e6;
+            }}
 
-/* ============================================================
-   CARRUSEL
-   ============================================================ */
+            .opcion input {{
+                margin-top: 2px;
+                flex-shrink: 0;
+            }}
 
-.carrusel {{
-    display: flex;
+            /* =================================================
+               TEXTO
+               ================================================= */
 
-    gap: 8px;
+            .texto-opcion {{
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
 
-    overflow-x: auto;
+                overflow: hidden;
+            }}
 
-    scroll-snap-type: x mandatory;
+            .texto-opcion strong {{
+                line-height: 1.2;
+                font-size: 14px;
+            }}
 
-    padding: 2px 2px 8px 2px;
+            .artista {{
+                color: #666;
+                font-size: 13px;
+                line-height: 1.2;
+            }}
 
-    scrollbar-width: thin;
-}}
+            /* =================================================
+               INDICADOR DEL CARRUSEL
+               ================================================= */
 
-/* ============================================================
-   TARJETAS
-   ============================================================ */
+            .desliza {{
+                text-align: right;
 
-.opcion {{
-    flex: 0 0 calc((100% - 16px) / 3);
+                color: #999;
 
-    min-height: 72px;
+                font-size: 12px;
 
-    border: 1px solid #ddd;
+                margin-top: 1px;
 
-    border-radius: 7px;
+                padding-right: 4px;
+            }}
 
-    padding: 9px;
+            /* =================================================
+               ERRORES
+               ================================================= */
 
-    cursor: pointer;
+            .error {{
+                color: #b00020;
 
-    scroll-snap-align: start;
+                padding: 10px;
 
-    background: white;
+                border: 1px solid #f0c0c0;
 
-    display: flex;
+                border-radius: 6px;
+            }}
 
-    align-items: flex-start;
+            /* =================================================
+               BOTÓN
+               ================================================= */
 
-    gap: 7px;
+            button {{
+                width: 100%;
 
-    transition:
-        background 0.15s ease,
-        border 0.15s ease;
-}}
+                padding: 15px;
 
-.opcion:hover {{
-    background: #f7f7f7;
-}}
+                font-size: 18px;
 
-/* ============================================================
-   OPCIÓN SELECCIONADA
-   ============================================================ */
+                cursor: pointer;
 
-.opcion:has(input:checked) {{
-    border: 2px solid #999;
-    background: #f2f2f2;
-}}
+                border: none;
 
-.opcion input {{
-    margin-top: 2px;
+                border-radius: 7px;
 
-    flex-shrink: 0;
-}}
+                background: #7b2727;
 
-/* ============================================================
-   TEXTO
-   ============================================================ */
+                color: white;
 
-.texto-opcion {{
-    display: flex;
+                margin-top: 10px;
+            }}
 
-    flex-direction: column;
+            button:hover {{
+                opacity: 0.9;
+            }}
 
-    gap: 3px;
+            /* =================================================
+               MÓVIL
+               ================================================= */
 
-    overflow: hidden;
-}}
+            @media (max-width: 500px) {{
 
-.texto-opcion strong {{
-    line-height: 1.2;
+                body {{
+                    padding: 15px;
+                }}
 
-    font-size: 14px;
-}}
+                .opcion {{
+                    flex: 0 0 calc((100% - 8px) / 2);
 
-.artista {{
-    color: #666;
+                    min-height: 68px;
 
-    font-size: 13px;
+                    padding: 8px;
+                }}
 
-    line-height: 1.2;
-}}
+                .texto-opcion strong {{
+                    font-size: 13px;
+                }}
 
-/* ============================================================
-   INDICADOR
-   ============================================================ */
+                .artista {{
+                    font-size: 12px;
+                }}
 
-.desliza {{
-    text-align: right;
+            }}
 
-    color: white;
+        </style>
 
-    font-size: 12px;
+    </head>
 
-    margin-top: 1px;
+    <body>
 
-    padding-right: 4px;
-}}
+        <h1>Seleccionar canciones</h1>
 
-/* ============================================================
-   ERRORES
-   ============================================================ */
+        <p class="intro">
+            Revisa que esté seleccionada la versión correcta.
+        </p>
 
-.error {{
-    color: #b00020;
-
-    padding: 10px;
-
-    border: 1px solid #f0c0c0;
-
-    border-radius: 6px;
-
-    background: white;
-}}
-
-/* ============================================================
-   BOTÓN
-   ============================================================ */
-
-button {{
-    width: 100%;
-
-    padding: 15px;
-
-    font-size: 18px;
-
-    cursor: pointer;
-
-    border: none;
-
-    border-radius: 7px;
-
-    background: #222;
-
-    color: white;
-
-    margin-top: 10px;
-}}
-
-button:hover {{
-    opacity: 0.9;
-}}
-
-/* ============================================================
-   ENLACES
-   ============================================================ */
-
-.volver {{
-    color: white;
-
-    text-align: center;
-}}
-
-.volver a {{
-    color: white;
-}}
-
-/* ============================================================
-   MÓVIL
-   ============================================================ */
-
-@media (max-width: 600px) {{
-
-    body {{
-        padding: 15px;
-
-        font-size: 20px;
-    }}
-
-    .container {{
-        max-width: 100%;
-    }}
-
-    .opcion {{
-        flex: 0 0 calc((100% - 8px) / 2);
-
-        min-height: 68px;
-
-        padding: 8px;
-    }}
-
-    .texto-opcion strong {{
-        font-size: 13px;
-    }}
-
-    .artista {{
-        font-size: 12px;
-    }}
-
-    h1 {{
-        font-size: 24px;
-    }}
-
-}}
-
-</style>
-
-</head>
-
-
-<body>
-
-<div class="container">
-
-    <h1>Seleccionar canciones</h1>
-
-    <p class="intro">
-        Revisa que esté seleccionada la versión correcta.
-    </p>
-
-    <form
-        action="/crear_playlist/"
-        method="post"
-    >
-
-        <input
-            type="hidden"
-            name="nombre_playlist"
-            value="{html.escape(nombre_playlist, quote=True)}"
+        <form
+            action="/crear_playlist/"
+            method="post"
         >
 
-        {bloques}
+            <input
+                type="hidden"
+                name="nombre_playlist"
+                value="{html.escape(nombre_playlist, quote=True)}"
+            >
 
-        <button type="submit">
-            Crear playlist
-        </button>
+            {bloques}
 
-    </form>
+            <button type="submit">
+                Crear playlist
+            </button>
 
-    <br>
+        </form>
 
-    <p class="volver">
-        <a href="/">
-            Empezar de nuevo
-        </a>
-    </p>
+        <br>
 
-</div>
+        <p>
+            <a href="/">
+                Empezar de nuevo
+            </a>
+        </p>
 
-</body>
+    </body>
 
-</html>
+    </html>
 
-""")
+    """)
 
 
 # ============================================================
@@ -873,12 +712,8 @@ async def crear_playlist(
 
         return HTMLResponse(f"""
         <h2>Error obteniendo acceso a Spotify</h2>
-
         <pre>{html.escape(error)}</pre>
-
-        <p>
-            <a href="/">Volver</a>
-        </p>
+        <p><a href="/">Volver</a></p>
         """)
 
     # ========================================================
@@ -909,8 +744,7 @@ async def crear_playlist(
         json={
             "name": nombre_playlist,
             "description": (
-                "Grupo de música para bodas y eventos en Madrid. "
-                "Música en directo para bodas, fiestas y eventos."
+                "Grupo de música para bodas y eventos en Madrid. Música en directo para bodas, fiestas y eventos."
             ),
             "public": False
         }
@@ -973,82 +807,7 @@ async def crear_playlist(
                 return HTMLResponse(f"""
                 <html>
 
-                <head>
-
-                    <meta name="viewport"
-                          content="width=device-width, initial-scale=1.0">
-
-                    <style>
-
-                        body {{
-                            font-family: Arial, Helvetica, sans-serif;
-                            font-size: 18px;
-
-                            display: flex;
-                            justify-content: center;
-
-                            min-height: 100svh;
-
-                            padding: 20px;
-
-                            position: relative;
-                        }}
-
-                        body::before {{
-                            content: "";
-                            position: fixed;
-                            inset: 0;
-
-                            background-image:
-                                url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
-
-                            background-size: cover;
-                            background-position: center;
-
-                            box-shadow:
-                                inset 0 0 0 1000px rgba(0,0,0,0.5);
-
-                            z-index: -1;
-                        }}
-
-                        .container {{
-                            width: 100%;
-                            max-width: 600px;
-                        }}
-
-                        h2,
-                        p,
-                        pre {{
-                            color: white;
-                        }}
-
-                        .boton {{
-                            display: block;
-
-                            text-align: center;
-
-                            background: #1DB954;
-
-                            color: white;
-
-                            padding: 14px;
-
-                            text-decoration: none;
-
-                            border-radius: 6px;
-
-                            margin: 25px 0;
-
-                            font-size: 18px;
-                        }}
-
-                    </style>
-
-                </head>
-
                 <body>
-
-                <div class="container">
 
                     <h2>
                         Playlist creada, pero hubo un error
@@ -1065,11 +824,12 @@ async def crear_playlist(
                         {add_result.status_code}
                     </p>
 
-                    <pre>{html.escape(add_result.text)}</pre>
+                    <pre>
+{html.escape(add_result.text)}
+                    </pre>
 
                     <p>
                         <a
-                            class="boton"
                             href="{html.escape(spotify_url)}"
                             target="_blank"
                         >
@@ -1082,8 +842,6 @@ async def crear_playlist(
                             Crear otra playlist
                         </a>
                     </p>
-
-                </div>
 
                 </body>
 
@@ -1098,17 +856,15 @@ async def crear_playlist(
     if uris:
 
         mensaje = f"""
-        <p class="resultado">
-            <strong>
-                {len(uris)} canciones añadidas correctamente.
-            </strong>
+        <p>
+            {len(uris)} canciones añadidas correctamente.
         </p>
         """
 
     else:
 
         mensaje = """
-        <p class="resultado">
+        <p>
             No se seleccionó ninguna canción.
         </p>
         """
@@ -1116,190 +872,64 @@ async def crear_playlist(
 
     return HTMLResponse(f"""
 
-<html>
+    <html>
 
-<head>
+    <head>
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0">
 
-<link rel="icon"
-      href="https://losperrostratos.es/wp-content/uploads/2025/11/cropped-bk2a2736.jpg">
+        <title>Playlist creada</title>
 
-<title>Playlist creada</title>
+        <style>
 
-<style>
+            body {{
+                font-family: Arial, Helvetica, sans-serif;
+                max-width: 700px;
+                margin: auto;
+                padding: 20px;
+            }}
 
-/* ============================================================
-   GENERAL
-   ============================================================ */
+            h2 {{
+                text-align: center;
+            }}
 
-* {{
-    box-sizing: border-box;
-}}
+            .boton {{
+                display: block;
+                text-align: center;
 
-body {{
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 18px;
+                background: #1DB954;
+                color: white;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+                padding: 14px;
 
-    min-height: 100svh;
+                text-decoration: none;
 
-    padding: 15px;
+                border-radius: 6px;
 
-    position: relative;
+                margin: 25px 0;
 
-    margin: 0;
-}}
+                font-size: 18px;
+            }}
 
-/* ============================================================
-   FONDO
-   ============================================================ */
+        </style>
 
-body::before {{
-    content: "";
-    position: fixed;
-    inset: 0;
+    </head>
 
-    background-image:
-        url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+    <body>
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+        <h2>Playlist creada</h2>
 
-    box-shadow:
-        inset 0 0 0 1000px rgba(0,0,0,0.5);
+        {mensaje}
 
-    z-index: -1;
-}}
+        <p>
+            <a href="/">
+                Crear otra playlist
+            </a>
+        </p>
 
-/* ============================================================
-   CONTENEDOR
-   ============================================================ */
+    </body>
 
-.container {{
-    width: 100%;
-    max-width: 600px;
-}}
+    </html>
 
-/* ============================================================
-   TÍTULO
-   ============================================================ */
-
-h2 {{
-    text-align: center;
-
-    color: white;
-
-    margin-bottom: 25px;
-}}
-
-/* ============================================================
-   TEXTO
-   ============================================================ */
-
-.resultado {{
-    color: white;
-
-    text-align: center;
-}}
-
-/* ============================================================
-   BOTÓN SPOTIFY
-   ============================================================ */
-
-.boton {{
-    display: block;
-
-    text-align: center;
-
-    background: #1DB954;
-
-    color: white;
-
-    padding: 14px;
-
-    text-decoration: none;
-
-    border-radius: 6px;
-
-    margin: 25px 0;
-
-    font-size: 18px;
-}}
-
-/* ============================================================
-   ENLACE FINAL
-   ============================================================ */
-
-.volver {{
-    text-align: center;
-}}
-
-.volver a {{
-    color: white;
-}}
-
-/* ============================================================
-   MÓVIL
-   ============================================================ */
-
-@media (max-width: 600px) {{
-
-    body {{
-        align-items: flex-start;
-
-        padding: 15px;
-
-        font-size: 20px;
-    }}
-
-    h2 {{
-        font-size: 24px;
-    }}
-
-    .boton {{
-        font-size: 20px;
-        padding: 14px;
-    }}
-
-}}
-
-</style>
-
-</head>
-
-
-<body>
-
-<div class="container">
-
-    <h2>Playlist creada</h2>
-
-    <a
-        class="boton"
-        href="{html.escape(spotify_url)}"
-        target="_blank"
-    >
-        Abrir playlist en Spotify
-    </a>
-
-    {mensaje}
-
-    <p class="volver">
-        <a href="/">
-            Crear otra playlist
-        </a>
-    </p>
-
-</div>
-
-</body>
-
-</html>
-
-""")
+    """)
