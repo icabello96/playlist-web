@@ -129,8 +129,7 @@ return HTMLResponse(f"""
 <p><strong>Nombre:</strong> {datos.get("name")}</p>
 
 <p>
-{datos.get(get("spotify", "#")}" target="_blank">
-Abrir playlist en Spotify
+<a href="{datos.get('external_urls', {}).get('spotify', '#')}" list en Spotify
 </a>
 </p>
 
