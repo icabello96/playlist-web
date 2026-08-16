@@ -105,6 +105,34 @@ async def crear_playlist(
         }
     )
 
-    return HTMLResponse(
-        f"<pre>{r.text}</pre>"
-    )
+access_token = r.json()["access_token"]
+
+user_id = os.getenv("SPOTIFY_USER_ID")
+
+playlist = requests.post(
+    f"https://api.spotify.com/v1/users/{user_id}/playlists",
+    headers={
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    },
+    json={
+        "name": nombre_playlist,
+        "public": False
+    }
+)
+
+datos = playlist.json()
+
+return HTMLResponse(f"""
+<h2>Playlist creada</h2>
+
+<p><strong>Nombre:</strong> {datos.get("name")}</p>
+
+<p>
+{datos.get(get("spotify", "#")}" target="_blank">
+Abrir playlist en Spotify
+</a>
+</p>
+
+<pre>{playlist.text}</pre>
+""")
