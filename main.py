@@ -123,32 +123,31 @@ async def crear_playlist(
 
     datos = playlist.json()
 
-    return HTMLResponse(f"""
+        return HTMLResponse(f"""
     <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Playlist creada</title>
+        <title>Resultado</title>
     </head>
 
     <body>
-        <h2>Playlist creada</h2>
+        <h2>Resultado</h2>
 
         <p>
-            <strong>Nombre:</strong> {datos.get("name", nombre_playlist)}
+            <strong>Nombre introducido:</strong> {nombre_playlist}
         </p>
 
         <p>
-            <a href="{datos.get('external_urls', {}).get('spotify', '#')}"
-               target="_blank">
-                Abrir playlist en Spotify
-            </a>
+            <strong>HTTP Status Spotify:</strong> {playlist.status_code}
         </p>
+
+        <h3>Respuesta de Spotify</h3>
 
         <pre>{playlist.text}</pre>
 
         <p>
             <a href="/">
-                Crear otra playlist
+                Volver
             </a>
         </p>
     </body>
