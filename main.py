@@ -11,74 +11,74 @@ app = FastAPI()
 @app.get("/", response_class=HTMLResponse)
 async def home():
     return """
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Playlist Creator</title>
+        <title>Playlist Creator</title>
 
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-        }
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                max-width: 600px;
+                margin: auto;
+                padding: 20px;
+            }
 
-        h1 {
-            text-align: center;
-        }
+            h1 {
+                text-align: center;
+            }
 
-        input, textarea {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 10px;
-            font-size: 16px;
-        }
+            input, textarea {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px;
+                font-size: 16px;
+            }
 
-        textarea {
-            height: 300px;
-        }
+            textarea {
+                height: 300px;
+            }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-    </style>
-</head>
+            button {
+                width: 100%;
+                padding: 12px;
+                font-size: 18px;
+                cursor: pointer;
+            }
+        </style>
+    </head>
 
-<body>
+    <body>
 
-    <h1>Playlist Creator</h1>
+        <h1>Playlist Creator</h1>
 
-    /crear_playlist/
+        /crear_playlist/
 
-        <label>Nombre de la playlist</label><br>
+            <label>Nombre de la playlist</label><br>
 
-        <input
-            type="text"
-            name="nombre_playlist"
-            required
-        ><br><br>
+            <input
+                type="text"
+                name="nombre_playlist"
+                required
+            ><br><br>
 
-        <label>Canciones (una por línea)</label><br>
+            <label>Canciones (una por línea)</label><br>
 
-        <textarea
-            name="canciones"
-            required
-        ></textarea><br><br>
+            <textarea
+                name="canciones"
+                required
+            ></textarea><br><br>
 
-        <button type="submit">
-            Crear playlist Spotify
-        </button>
+            <button type="submit">
+                Crear playlist Spotify
+            </button>
 
-    </form>
+        </form>
 
-</body>
-</html>
-"""
+    </body>
+    </html>
+    """
 
 
 @app.post("/crear_playlist/")
