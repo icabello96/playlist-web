@@ -1,6 +1,10 @@
 from fastapi import FastAPI, Form
 from fastapi.responses import HTMLResponse
 
+import os
+import requests
+import base64
+
 app = FastAPI()
 
 
@@ -82,26 +86,26 @@ async def crear_playlist(
     canciones: str = Form(...)
 ):
 
-    lista = [
-        x.strip()
-        for x in canciones.splitlines()
-        if x.strip()
-    ]
+    client_id = os.getenv("SPOTIFY_CLIENT_ID")
+    client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
+    refresh_token = os.getenv("SPOTIFY_REFRESH_TOKEN")
 
-    return HTMLResponse(f"""
-    <html>
-    <body>
+    auth = base64.b64encode(
+        f"{client_id}:{client_secret}".encode()
+    ).decode()
 
-    <h2>Prueba OK</h2>
+    r = requests.post(
+        "https://accounts.spotify.com/api/token",
+        headers={
+            "Authorization": f"Basic {auth}",
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data={
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token
+        }
+    )
 
-    <p><strong>Playlist:</strong> {nombre_playlist}</p>
-
-    <p><strong>Canciones:</strong> {len(lista)}</p>
-
-    <pre>
-{chr(10).join(lista)}
-    </pre>
-
-    </body>
-    </html>
-    """)
+    return HTMLResponse(
+        f"<pre>{r.text}</pre>"
+    )
