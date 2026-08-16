@@ -233,12 +233,7 @@ async def buscar_canciones(
             opciones.append({
                 "uri": track.get("uri", ""),
                 "titulo": track.get("name", ""),
-                "artista": artistas,
-                "spotify_url": track.get(
-                    "external_urls", {}
-                ).get(
-                    "spotify", "#"
-                )
+                "artista": artistas
             })
 
         resultados.append({
@@ -260,7 +255,7 @@ async def buscar_canciones(
         opciones = resultado["opciones"]
 
         bloques += f"""
-        <div class="cancion">
+        <section class="cancion">
 
             <h3>
                 {html.escape(entrada)}
@@ -277,6 +272,10 @@ async def buscar_canciones(
 
         else:
 
+            bloques += """
+            <div class="carrusel">
+            """
+
             for numero, opcion in enumerate(opciones):
 
                 uri = html.escape(
@@ -292,15 +291,7 @@ async def buscar_canciones(
                     opcion["artista"]
                 )
 
-                spotify_url = html.escape(
-                    opcion["spotify_url"],
-                    quote=True
-                )
-
                 checked = ""
-
-                # Si solo hay un resultado,
-                # lo seleccionamos automáticamente.
 
                 if len(opciones) == 1 and numero == 0:
                     checked = "checked"
@@ -316,21 +307,15 @@ async def buscar_canciones(
                         {checked}
                     >
 
-                    <span class="resultado">
+                    <span class="texto-opcion">
 
                         <strong>
                             {titulo}
                         </strong>
 
-                        — {artista}
-
-                        <a
-                            href="{spotify_url}"
-                            target="_blank"
-                            class="spotify"
-                        >
-                            Spotify
-                        </a>
+                        <span class="artista">
+                            {artista}
+                        </span>
 
                     </span>
 
@@ -338,8 +323,20 @@ async def buscar_canciones(
 
                 """
 
+            bloques += """
+            </div>
+            """
+
+            if len(opciones) > 3:
+
+                bloques += """
+                <div class="desliza">
+                    Desliza para ver más →
+                </div>
+                """
+
         bloques += """
-        </div>
+        </section>
         """
 
     return HTMLResponse(f"""
@@ -355,60 +352,142 @@ async def buscar_canciones(
 
         <style>
 
+            * {{
+                box-sizing: border-box;
+            }}
+
             body {{
                 font-family: Arial, Helvetica, sans-serif;
                 max-width: 700px;
                 margin: auto;
                 padding: 20px;
+                color: #222;
             }}
 
             h1 {{
                 text-align: center;
+                margin-bottom: 10px;
             }}
 
-            .cancion {{
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                padding: 15px;
+            .intro {{
+                text-align: center;
+                color: #666;
                 margin-bottom: 25px;
             }}
 
+            .cancion {{
+                margin-bottom: 25px;
+            }}
+
+            .cancion h3 {{
+                margin-bottom: 10px;
+            }}
+
+            .carrusel {{
+                display: flex;
+                gap: 10px;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                padding: 4px 2px 12px 2px;
+
+                scrollbar-width: thin;
+            }}
+
             .opcion {{
-                display: block;
-                padding: 12px;
-                margin: 8px 0;
+                flex: 0 0 calc((100% - 20px) / 3);
+                min-height: 90px;
+
                 border: 1px solid #ddd;
-                border-radius: 6px;
+                border-radius: 8px;
+
+                padding: 12px;
+
                 cursor: pointer;
+
+                scroll-snap-align: start;
+
+                background: white;
+
+                display: flex;
+                align-items: flex-start;
+                gap: 8px;
             }}
 
             .opcion:hover {{
-                background: #f5f5f5;
+                background: #f7f7f7;
+            }}
+
+            .opcion:has(input:checked) {{
+                border: 2px solid #222;
+                background: #f2f2f2;
             }}
 
             .opcion input {{
-                width: auto;
-                margin-right: 8px;
+                margin-top: 3px;
+                flex-shrink: 0;
             }}
 
-            .resultado {{
-                line-height: 1.5;
+            .texto-opcion {{
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+
+                overflow: hidden;
             }}
 
-            .spotify {{
-                margin-left: 8px;
+            .texto-opcion strong {{
+                line-height: 1.25;
+            }}
+
+            .artista {{
+                color: #666;
                 font-size: 14px;
+                line-height: 1.25;
             }}
 
-            button {{
-                width: 100%;
-                padding: 14px;
-                font-size: 18px;
-                cursor: pointer;
+            .desliza {{
+                text-align: right;
+                color: #888;
+                font-size: 13px;
+                margin-top: 3px;
             }}
 
             .error {{
                 color: #b00020;
+                padding: 10px;
+                border: 1px solid #f0c0c0;
+                border-radius: 6px;
+            }}
+
+            button {{
+                width: 100%;
+                padding: 15px;
+                font-size: 18px;
+                cursor: pointer;
+
+                border: none;
+                border-radius: 7px;
+
+                background: #222;
+                color: white;
+
+                margin-top: 10px;
+            }}
+
+            button:hover {{
+                opacity: 0.9;
+            }}
+
+            @media (max-width: 500px) {{
+
+                body {{
+                    padding: 15px;
+                }}
+
+                .opcion {{
+                    flex: 0 0 calc((100% - 10px) / 2);
+                }}
+
             }}
 
         </style>
@@ -419,9 +498,8 @@ async def buscar_canciones(
 
         <h1>Seleccionar canciones</h1>
 
-        <p>
-            Revisa las canciones antes de crear la playlist.
-            Cuando haya varias versiones, selecciona la correcta.
+        <p class="intro">
+            Revisa las coincidencias y selecciona la versión correcta.
         </p>
 
         <form
@@ -438,7 +516,7 @@ async def buscar_canciones(
             {bloques}
 
             <button type="submit">
-                Crear playlist con las canciones seleccionadas
+                Crear playlist
             </button>
 
         </form>
@@ -538,16 +616,10 @@ async def crear_playlist(
     )
 
     # --------------------------------------------------------
-    # Añadir canciones
+    # Añadir canciones en bloques de 100
     # --------------------------------------------------------
 
-    resultados_anadidos = []
-
     if uris:
-
-        # Spotify permite un máximo de 100 elementos
-        # por petición. Por eso dividimos automáticamente
-        # playlists grandes en bloques de 100.
 
         for inicio in range(0, len(uris), 100):
 
@@ -563,8 +635,6 @@ async def crear_playlist(
                     "uris": bloque
                 }
             )
-
-            resultados_anadidos.append(add_result)
 
             if add_result.status_code != 201:
 
@@ -610,7 +680,7 @@ async def crear_playlist(
                 """)
 
     # --------------------------------------------------------
-    # Resultado
+    # Resultado final
     # --------------------------------------------------------
 
     if uris:
@@ -651,7 +721,7 @@ async def crear_playlist(
                 padding: 20px;
             }}
 
-            h1, h2 {{
+            h2 {{
                 text-align: center;
             }}
 
@@ -687,8 +757,6 @@ async def crear_playlist(
         >
             Abrir playlist en Spotify
         </a>
-
-        <h3>Resultado</h3>
 
         {mensaje}
 
