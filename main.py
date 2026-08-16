@@ -105,6 +105,18 @@ async def crear_playlist(
         }
     )
 
+    if r.status_code != 200:
+        return HTMLResponse(f"""
+        <html>
+        <body>
+            <h2>Error obteniendo el access token</h2>
+            <p><strong>Status:</strong> {r.status_code}</p>
+            <pre>{r.text}</pre>
+            <p><a href="/">Volver</a></p>
+        </body>
+        </html>
+        """)
+
     access_token = r.json()["access_token"]
 
     user_id = os.getenv("SPOTIFY_USER_ID")
@@ -121,9 +133,7 @@ async def crear_playlist(
         }
     )
 
-    datos = playlist.json()
-
-        return HTMLResponse(f"""
+    return HTMLResponse(f"""
     <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
