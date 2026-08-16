@@ -293,7 +293,7 @@ async def buscar_canciones(
 
                 checked = ""
 
-                if len(opciones) == 1 and numero == 0:
+                if numero == 0:
                     checked = "checked"
 
                 bloques += f"""
@@ -582,6 +582,7 @@ async def crear_playlist(
         },
         json={
             "name": nombre_playlist,
+            "description": "Los Perrostratos, grupo de música para bodas y eventos en Madrid. Música en directo para bodas, fiestas y eventos.",
             "public": False
         }
     )
