@@ -55,25 +55,25 @@ async def home():
 
         /crear_playlist/
 
-            <label>Nombre de la playlist</label><br>
-            <input
-                type="text"
-                name="nombre_playlist"
-                required
-            ><br><br>
+    <label>Nombre de la playlist</label><br>
+    <input
+        type="text"
+        name="nombre_playlist"
+        required
+    ><br><br>
 
-            <label>Canciones (una por línea)</label><br>
+    <label>Canciones (una por línea)</label><br>
 
-            <textarea
-                name="canciones"
-                required
-            ></textarea><br><br>
+    <textarea
+        name="canciones"
+        required
+    ></textarea><br><br>
 
-            <button type="submit">
-                Crear playlist Spotify
-            </button>
+    <button type="submit">
+        Crear playlist Spotify
+    </button>
 
-        </form>
+</form>
 
     </body>
     </html>
