@@ -51,28 +51,30 @@ async def home():
 
     <body>
 
-<h1>Playlist Creator</h1>
+        <h1>Playlist Creator</h1>
 
-<form action="/crear_playlist/" method="post"> 
-<label>Nombre de la playlist</label><br>
-    <input
-        type="text"
-        name="nombre_playlist"
-        required
-    ><br><br>
+        <form action="/crear_playlist/" method="post">
 
-    <label>Canciones (una por línea)</label><br>
+            <label>Nombre de la playlist</label><br>
 
-    <textarea
-        name="canciones"
-        required
-    ></textarea><br><br>
+            <input
+                type="text"
+                name="nombre_playlist"
+                required
+            ><br><br>
 
-    <button type="submit">
-        Crear playlist Spotify
-    </button>
+            <label>Canciones (una por línea)</label><br>
 
-</form>
+            <textarea
+                name="canciones"
+                required
+            ></textarea><br><br>
+
+            <button type="submit">
+                Crear playlist Spotify
+            </button>
+
+        </form>
 
     </body>
     </html>
@@ -110,19 +112,24 @@ async def crear_playlist(
         <html>
         <body>
             <h2>Error obteniendo el access token</h2>
-            <p><strong>Status:</strong> {r.status_code}</p>
+
+            <p>
+                <strong>Status:</strong> {r.status_code}
+            </p>
+
             <pre>{r.text}</pre>
-            <p><a href="/">Volver</a></p>
+
+            <p>
+                <a href="/">Volver</a>
+            </p>
         </body>
         </html>
         """)
 
     access_token = r.json()["access_token"]
 
-    user_id = os.getenv("SPOTIFY_USER_ID")
-
     playlist = requests.post(
-        f"https://api.spotify.com/v1/users/{user_id}/playlists",
+        "https://api.spotify.com/v1/me/playlists",
         headers={
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json"
