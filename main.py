@@ -1264,11 +1264,6 @@ async def crear_playlist(
 
             <h2>Playlist creada</h2>
 
-            <p class="nombre">
-                <strong>Nombre:</strong>
-                {html.escape(nombre_playlist)}
-            </p>
-
             <a
                 class="boton"
                 href="{html.escape(spotify_url)}"
