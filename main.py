@@ -242,13 +242,15 @@ async def buscar_canciones(
             "opciones": opciones
         })
 
+
     # ========================================================
     # CONSTRUIR CARRUSELES
     # ========================================================
 
     bloques = ""
 
-    primer_carrusel_con_desliza = True
+    # Solo se mostrará "Desliza →" una vez
+    primer_desliza = True
 
     for resultado in resultados:
 
@@ -326,14 +328,10 @@ async def buscar_canciones(
             """
 
             # ------------------------------------------------
-            # Solo mostramos "Desliza →" en el primer
-            # carrusel que tenga más de 3 resultados
+            # "Desliza →" solo aparece una vez
             # ------------------------------------------------
 
-            if (
-                len(opciones) > 3
-                and primer_carrusel_con_desliza
-            ):
+            if len(opciones) > 3 and primer_desliza:
 
                 bloques += """
                     <div class="desliza">
@@ -341,14 +339,15 @@ async def buscar_canciones(
                     </div>
                 """
 
-                primer_carrusel_con_desliza = False
+                primer_desliza = False
 
         bloques += """
         </section>
         """
 
+
     # ========================================================
-    # HTML
+    # PANTALLA DE SELECCIÓN
     # ========================================================
 
     return HTMLResponse(f"""
@@ -378,7 +377,7 @@ async def buscar_canciones(
 
             h1 {{
                 text-align: center;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }}
 
             .intro {{
@@ -387,13 +386,13 @@ async def buscar_canciones(
                 margin-bottom: 20px;
             }}
 
+            /* =================================================
+               CADA CARRUSEL
+               ================================================= */
+
             .cancion {{
                 margin-bottom: 12px;
             }}
-
-            /* ================================================
-               CARRUSEL
-               ================================================ */
 
             .carrusel {{
                 display: flex;
@@ -408,9 +407,9 @@ async def buscar_canciones(
                 scrollbar-width: thin;
             }}
 
-            /* ================================================
-               OPCIONES
-               ================================================ */
+            /* =================================================
+               TARJETAS
+               ================================================= */
 
             .opcion {{
                 flex: 0 0 calc((100% - 16px) / 3);
@@ -442,7 +441,9 @@ async def buscar_canciones(
                 background: #f7f7f7;
             }}
 
-            /* Opción seleccionada */
+            /* =================================================
+               OPCIÓN SELECCIONADA
+               ================================================= */
 
             .opcion:has(input:checked) {{
                 border: 2px solid #999;
@@ -454,9 +455,9 @@ async def buscar_canciones(
                 flex-shrink: 0;
             }}
 
-            /* ================================================
+            /* =================================================
                TEXTO
-               ================================================ */
+               ================================================= */
 
             .texto-opcion {{
                 display: flex;
@@ -468,21 +469,18 @@ async def buscar_canciones(
 
             .texto-opcion strong {{
                 line-height: 1.2;
-
                 font-size: 14px;
             }}
 
             .artista {{
                 color: #666;
-
                 font-size: 13px;
-
                 line-height: 1.2;
             }}
 
-            /* ================================================
+            /* =================================================
                INDICADOR DEL CARRUSEL
-               ================================================ */
+               ================================================= */
 
             .desliza {{
                 text-align: right;
@@ -496,9 +494,9 @@ async def buscar_canciones(
                 padding-right: 4px;
             }}
 
-            /* ================================================
+            /* =================================================
                ERRORES
-               ================================================ */
+               ================================================= */
 
             .error {{
                 color: #b00020;
@@ -510,9 +508,9 @@ async def buscar_canciones(
                 border-radius: 6px;
             }}
 
-            /* ================================================
+            /* =================================================
                BOTÓN
-               ================================================ */
+               ================================================= */
 
             button {{
                 width: 100%;
@@ -538,9 +536,9 @@ async def buscar_canciones(
                 opacity: 0.9;
             }}
 
-            /* ================================================
+            /* =================================================
                MÓVIL
-               ================================================ */
+               ================================================= */
 
             @media (max-width: 500px) {{
 
@@ -632,9 +630,9 @@ async def crear_playlist(
         <p><a href="/">Volver</a></p>
         """)
 
-    # --------------------------------------------------------
-    # Recoger dinámicamente todas las canciones seleccionadas
-    # --------------------------------------------------------
+    # ========================================================
+    # RECOGER TODAS LAS CANCIONES SELECCIONADAS
+    # ========================================================
 
     form = await request.form()
 
@@ -646,9 +644,10 @@ async def crear_playlist(
 
             uris.append(str(valor))
 
-    # --------------------------------------------------------
-    # Crear playlist
-    # --------------------------------------------------------
+
+    # ========================================================
+    # CREAR PLAYLIST
+    # ========================================================
 
     playlist = requests.post(
         "https://api.spotify.com/v1/me/playlists",
@@ -658,7 +657,11 @@ async def crear_playlist(
         },
         json={
             "name": nombre_playlist,
-            "description": "Grupo de música para bodas y eventos en Madrid. Música en directo para bodas, fiestas y eventos. Los perrostratos",
+            "description": (
+                "Los Perrostratos, grupo de música para bodas "
+                "y eventos en Madrid. Música en directo para "
+                "bodas, fiestas y eventos."
+            ),
             "public": False
         }
     )
@@ -692,9 +695,10 @@ async def crear_playlist(
         .get("spotify", "#")
     )
 
-    # --------------------------------------------------------
-    # Añadir canciones en bloques de 100
-    # --------------------------------------------------------
+
+    # ========================================================
+    # AÑADIR CANCIONES EN BLOQUES DE 100
+    # ========================================================
 
     if uris:
 
@@ -703,7 +707,8 @@ async def crear_playlist(
             bloque = uris[inicio:inicio + 100]
 
             add_result = requests.post(
-                f"https://api.spotify.com/v1/playlists/{playlist_id}/items",
+                f"https://api.spotify.com/v1/playlists/"
+                f"{playlist_id}/items",
                 headers={
                     "Authorization": f"Bearer {access_token}",
                     "Content-Type": "application/json"
@@ -720,11 +725,14 @@ async def crear_playlist(
 
                 <body>
 
-                    <h2>Playlist creada, pero hubo un error</h2>
+                    <h2>
+                        Playlist creada, pero hubo un error
+                    </h2>
 
                     <p>
                         La playlist se ha creado correctamente,
-                        pero Spotify no pudo añadir todas las canciones.
+                        pero Spotify no pudo añadir todas las
+                        canciones.
                     </p>
 
                     <p>
@@ -756,9 +764,10 @@ async def crear_playlist(
                 </html>
                 """)
 
-    # --------------------------------------------------------
-    # Resultado final
-    # --------------------------------------------------------
+
+    # ========================================================
+    # RESULTADO FINAL
+    # ========================================================
 
     if uris:
 
@@ -777,6 +786,7 @@ async def crear_playlist(
             No se seleccionó ninguna canción.
         </p>
         """
+
 
     return HTMLResponse(f"""
 
@@ -805,12 +815,18 @@ async def crear_playlist(
             .boton {{
                 display: block;
                 text-align: center;
+
                 background: #1DB954;
                 color: white;
+
                 padding: 14px;
+
                 text-decoration: none;
+
                 border-radius: 6px;
+
                 margin: 25px 0;
+
                 font-size: 18px;
             }}
 
