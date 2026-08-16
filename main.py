@@ -573,7 +573,7 @@ async def buscar_canciones(
         <h1>Seleccionar canciones</h1>
 
         <p class="intro">
-            Revisa las coincidencias y selecciona la versión correcta.
+            Revisa que esté seleccionada la versión correcta.
         </p>
 
         <form
@@ -658,9 +658,7 @@ async def crear_playlist(
         json={
             "name": nombre_playlist,
             "description": (
-                "Los Perrostratos, grupo de música para bodas "
-                "y eventos en Madrid. Música en directo para "
-                "bodas, fiestas y eventos."
+                "Grupo de música para bodas y eventos en Madrid. Música en directo para bodas, fiestas y eventos."
             ),
             "public": False
         }
@@ -837,11 +835,6 @@ async def crear_playlist(
     <body>
 
         <h2>Playlist creada</h2>
-
-        <p>
-            <strong>Nombre:</strong>
-            {html.escape(nombre_playlist)}
-        </p>
 
         <a
             class="boton"
