@@ -242,24 +242,21 @@ async def buscar_canciones(
             "opciones": opciones
         })
 
-    # --------------------------------------------------------
-    # Construir pantalla de selección
-    # --------------------------------------------------------
+    # ========================================================
+    # CONSTRUIR CARRUSELES
+    # ========================================================
 
     bloques = ""
+
+    primer_carrusel_con_desliza = True
 
     for resultado in resultados:
 
         indice = resultado["indice"]
-        entrada = resultado["entrada"]
         opciones = resultado["opciones"]
 
-        bloques += f"""
+        bloques += """
         <section class="cancion">
-
-            <h3>
-                {html.escape(entrada)}
-            </h3>
         """
 
         if not opciones:
@@ -273,7 +270,7 @@ async def buscar_canciones(
         else:
 
             bloques += """
-            <div class="carrusel">
+                <div class="carrusel">
             """
 
             for numero, opcion in enumerate(opciones):
@@ -291,6 +288,7 @@ async def buscar_canciones(
                     opcion["artista"]
                 )
 
+                # Primera opción seleccionada por defecto
                 checked = ""
 
                 if numero == 0:
@@ -298,46 +296,60 @@ async def buscar_canciones(
 
                 bloques += f"""
 
-                <label class="opcion">
+                    <label class="opcion">
 
-                    <input
-                        type="radio"
-                        name="cancion_{indice}"
-                        value="{uri}"
-                        {checked}
-                    >
+                        <input
+                            type="radio"
+                            name="cancion_{indice}"
+                            value="{uri}"
+                            {checked}
+                        >
 
-                    <span class="texto-opcion">
+                        <span class="texto-opcion">
 
-                        <strong>
-                            {titulo}
-                        </strong>
+                            <strong>
+                                {titulo}
+                            </strong>
 
-                        <span class="artista">
-                            {artista}
+                            <span class="artista">
+                                {artista}
+                            </span>
+
                         </span>
 
-                    </span>
-
-                </label>
+                    </label>
 
                 """
 
             bloques += """
-            </div>
+                </div>
             """
 
-            if len(opciones) > 3:
+            # ------------------------------------------------
+            # Solo mostramos "Desliza →" en el primer
+            # carrusel que tenga más de 3 resultados
+            # ------------------------------------------------
+
+            if (
+                len(opciones) > 3
+                and primer_carrusel_con_desliza
+            ):
 
                 bloques += """
-                <div class="desliza">
-                    Desliza para ver más →
-                </div>
+                    <div class="desliza">
+                        Desliza →
+                    </div>
                 """
+
+                primer_carrusel_con_desliza = False
 
         bloques += """
         </section>
         """
+
+    # ========================================================
+    # HTML
+    # ========================================================
 
     return HTMLResponse(f"""
 
@@ -372,35 +384,43 @@ async def buscar_canciones(
             .intro {{
                 text-align: center;
                 color: #666;
-                margin-bottom: 25px;
+                margin-bottom: 20px;
             }}
 
             .cancion {{
-                margin-bottom: 25px;
+                margin-bottom: 12px;
             }}
 
-            .cancion h3 {{
-                margin-bottom: 10px;
-            }}
+            /* ================================================
+               CARRUSEL
+               ================================================ */
 
             .carrusel {{
                 display: flex;
-                gap: 10px;
+                gap: 8px;
+
                 overflow-x: auto;
+
                 scroll-snap-type: x mandatory;
-                padding: 4px 2px 12px 2px;
+
+                padding: 2px 2px 8px 2px;
 
                 scrollbar-width: thin;
             }}
 
+            /* ================================================
+               OPCIONES
+               ================================================ */
+
             .opcion {{
-                flex: 0 0 calc((100% - 20px) / 3);
-                min-height: 90px;
+                flex: 0 0 calc((100% - 16px) / 3);
+
+                min-height: 72px;
 
                 border: 1px solid #ddd;
-                border-radius: 8px;
+                border-radius: 7px;
 
-                padding: 12px;
+                padding: 9px;
 
                 cursor: pointer;
 
@@ -410,65 +430,105 @@ async def buscar_canciones(
 
                 display: flex;
                 align-items: flex-start;
-                gap: 8px;
+
+                gap: 7px;
+
+                transition:
+                    background 0.15s ease,
+                    border 0.15s ease;
             }}
 
             .opcion:hover {{
                 background: #f7f7f7;
             }}
 
+            /* Opción seleccionada */
+
             .opcion:has(input:checked) {{
-                border: 2px solid #222;
+                border: 2px solid #999;
                 background: #f2f2f2;
             }}
 
             .opcion input {{
-                margin-top: 3px;
+                margin-top: 2px;
                 flex-shrink: 0;
             }}
+
+            /* ================================================
+               TEXTO
+               ================================================ */
 
             .texto-opcion {{
                 display: flex;
                 flex-direction: column;
-                gap: 5px;
+                gap: 3px;
 
                 overflow: hidden;
             }}
 
             .texto-opcion strong {{
-                line-height: 1.25;
+                line-height: 1.2;
+
+                font-size: 14px;
             }}
 
             .artista {{
                 color: #666;
-                font-size: 14px;
-                line-height: 1.25;
+
+                font-size: 13px;
+
+                line-height: 1.2;
             }}
+
+            /* ================================================
+               INDICADOR DEL CARRUSEL
+               ================================================ */
 
             .desliza {{
                 text-align: right;
-                color: #888;
-                font-size: 13px;
-                margin-top: 3px;
+
+                color: #999;
+
+                font-size: 12px;
+
+                margin-top: 1px;
+
+                padding-right: 4px;
             }}
+
+            /* ================================================
+               ERRORES
+               ================================================ */
 
             .error {{
                 color: #b00020;
+
                 padding: 10px;
+
                 border: 1px solid #f0c0c0;
+
                 border-radius: 6px;
             }}
 
+            /* ================================================
+               BOTÓN
+               ================================================ */
+
             button {{
                 width: 100%;
+
                 padding: 15px;
+
                 font-size: 18px;
+
                 cursor: pointer;
 
                 border: none;
+
                 border-radius: 7px;
 
                 background: #222;
+
                 color: white;
 
                 margin-top: 10px;
@@ -478,6 +538,10 @@ async def buscar_canciones(
                 opacity: 0.9;
             }}
 
+            /* ================================================
+               MÓVIL
+               ================================================ */
+
             @media (max-width: 500px) {{
 
                 body {{
@@ -485,7 +549,19 @@ async def buscar_canciones(
                 }}
 
                 .opcion {{
-                    flex: 0 0 calc((100% - 10px) / 2);
+                    flex: 0 0 calc((100% - 8px) / 2);
+
+                    min-height: 68px;
+
+                    padding: 8px;
+                }}
+
+                .texto-opcion strong {{
+                    font-size: 13px;
+                }}
+
+                .artista {{
+                    font-size: 12px;
                 }}
 
             }}
@@ -582,7 +658,7 @@ async def crear_playlist(
         },
         json={
             "name": nombre_playlist,
-            "description": "Los Perrostratos, grupo de música para bodas y eventos en Madrid. Música en directo para bodas, fiestas y eventos.",
+            "description": "Grupo de música para bodas y eventos en Madrid. Música en directo para bodas, fiestas y eventos. Los perrostratos",
             "public": False
         }
     )
