@@ -105,33 +105,52 @@ async def crear_playlist(
         }
     )
 
-access_token = r.json()["access_token"]
+    access_token = r.json()["access_token"]
 
-user_id = os.getenv("SPOTIFY_USER_ID")
+    user_id = os.getenv("SPOTIFY_USER_ID")
 
-playlist = requests.post(
-    f"https://api.spotify.com/v1/users/{user_id}/playlists",
-    headers={
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
-    },
-    json={
-        "name": nombre_playlist,
-        "public": False
-    }
-)
+    playlist = requests.post(
+        f"https://api.spotify.com/v1/users/{user_id}/playlists",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "name": nombre_playlist,
+            "public": False
+        }
+    )
 
-datos = playlist.json()
+    datos = playlist.json()
 
-return HTMLResponse(f"""
-<h2>Playlist creada</h2>
+    return HTMLResponse(f"""
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Playlist creada</title>
+    </head>
 
-<p><strong>Nombre:</strong> {datos.get("name")}</p>
+    <body>
+        <h2>Playlist creada</h2>
 
-<p>
-<a href="{datos.get('external_urls', {}).get('spotify', '#')}" list en Spotify
-</a>
-</p>
+        <p>
+            <strong>Nombre:</strong> {datos.get("name", nombre_playlist)}
+        </p>
 
-<pre>{playlist.text}</pre>
-""")
+        <p>
+            <a href="{datos.get('external_urls', {}).get('spotify', '#')}"
+               target="_blank">
+                Abrir playlist en Spotify
+            </a>
+        </p>
+
+        <pre>{playlist.text}</pre>
+
+        <p>
+            <a href="/">
+                Crear otra playlist
+            </a>
+        </p>
+    </body>
+    </html>
+    """)
