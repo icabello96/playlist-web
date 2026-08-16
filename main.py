@@ -1,11 +1,10 @@
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 
 import os
 import requests
 import base64
 import html
-import json
 
 
 app = FastAPI()
@@ -231,38 +230,10 @@ async def buscar_canciones(
                 for artist in track.get("artists", [])
             )
 
-            album = track.get(
-                "album", {}
-            ).get(
-                "name", ""
-            )
-
-            fecha = track.get(
-                "album", {}
-            ).get(
-                "release_date", ""
-            )
-
-            imagenes = track.get(
-                "album", {}
-            ).get(
-                "images", []
-            )
-
-            imagen = ""
-
-            if imagenes:
-                imagen = imagenes[-1].get(
-                    "url", ""
-                )
-
             opciones.append({
                 "uri": track.get("uri", ""),
                 "titulo": track.get("name", ""),
                 "artista": artistas,
-                "album": album,
-                "fecha": fecha,
-                "imagen": imagen,
                 "spotify_url": track.get(
                     "external_urls", {}
                 ).get(
@@ -279,11 +250,6 @@ async def buscar_canciones(
     # --------------------------------------------------------
     # Construir pantalla de selección
     # --------------------------------------------------------
-
-    resultados_json = json.dumps(
-        resultados,
-        ensure_ascii=False
-    )
 
     bloques = ""
 
@@ -326,16 +292,6 @@ async def buscar_canciones(
                     opcion["artista"]
                 )
 
-                album = html.escape(
-                    opcion["album"]
-                )
-
-                fecha = html.escape(
-                    opcion["fecha"]
-                )
-
-                imagen = opcion["imagen"]
-
                 spotify_url = html.escape(
                     opcion["spotify_url"],
                     quote=True
@@ -360,57 +316,23 @@ async def buscar_canciones(
                         {checked}
                     >
 
-                    <div class="info">
+                    <span class="resultado">
 
-                """
+                        <strong>
+                            {titulo}
+                        </strong>
 
-                if imagen:
+                        — {artista}
 
-                    bloques += f"""
-                        <img
-                            src="{html.escape(imagen, quote=True)}"
-                            class="portada"
+                        <a
+                            href="{spotify_url}"
+                            target="_blank"
+                            class="spotify"
                         >
-                    """
+                            Spotify
+                        </a>
 
-                bloques += f"""
-
-                        <div>
-
-                            <strong>
-                                {titulo}
-                            </strong>
-
-                            <br>
-
-                            <span>
-                                {artista}
-                            </span>
-
-                            <br>
-
-                            <small>
-                                {album}
-                                """
-
-                if fecha:
-                    bloques += f" · {fecha}"
-
-                bloques += f"""
-                            </small>
-
-                            <br>
-
-                            <a
-                                href="{spotify_url}"
-                                target="_blank"
-                            >
-                                Abrir en Spotify
-                            </a>
-
-                        </div>
-
-                    </div>
+                    </span>
 
                 </label>
 
@@ -453,7 +375,7 @@ async def buscar_canciones(
 
             .opcion {{
                 display: block;
-                padding: 10px;
+                padding: 12px;
                 margin: 8px 0;
                 border: 1px solid #ddd;
                 border-radius: 6px;
@@ -466,20 +388,16 @@ async def buscar_canciones(
 
             .opcion input {{
                 width: auto;
-                margin-right: 10px;
+                margin-right: 8px;
             }}
 
-            .info {{
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                margin-top: 8px;
+            .resultado {{
+                line-height: 1.5;
             }}
 
-            .portada {{
-                width: 60px;
-                height: 60px;
-                object-fit: cover;
+            .spotify {{
+                margin-left: 8px;
+                font-size: 14px;
             }}
 
             button {{
@@ -493,13 +411,6 @@ async def buscar_canciones(
                 color: #b00020;
             }}
 
-            .aviso {{
-                background: #fff4cc;
-                padding: 12px;
-                border-radius: 6px;
-                margin-bottom: 20px;
-            }}
-
         </style>
 
     </head>
@@ -508,18 +419,10 @@ async def buscar_canciones(
 
         <h1>Seleccionar canciones</h1>
 
-        <div class="aviso">
-
-            <strong>
-                Revisa las canciones antes de crear la playlist.
-            </strong>
-
-            <br><br>
-
-            Cuando haya varias versiones de una canción,
-            selecciona la correcta.
-
-        </div>
+        <p>
+            Revisa las canciones antes de crear la playlist.
+            Cuando haya varias versiones, selecciona la correcta.
+        </p>
 
         <form
             action="/crear_playlist/"
@@ -561,27 +464,8 @@ async def buscar_canciones(
 
 @app.post("/crear_playlist/", response_class=HTMLResponse)
 async def crear_playlist(
-    nombre_playlist: str = Form(...),
-    cancion_0: str | None = Form(None),
-    cancion_1: str | None = Form(None),
-    cancion_2: str | None = Form(None),
-    cancion_3: str | None = Form(None),
-    cancion_4: str | None = Form(None),
-    cancion_5: str | None = Form(None),
-    cancion_6: str | None = Form(None),
-    cancion_7: str | None = Form(None),
-    cancion_8: str | None = Form(None),
-    cancion_9: str | None = Form(None),
-    cancion_10: str | None = Form(None),
-    cancion_11: str | None = Form(None),
-    cancion_12: str | None = Form(None),
-    cancion_13: str | None = Form(None),
-    cancion_14: str | None = Form(None),
-    cancion_15: str | None = Form(None),
-    cancion_16: str | None = Form(None),
-    cancion_17: str | None = Form(None),
-    cancion_18: str | None = Form(None),
-    cancion_19: str | None = Form(None)
+    request: Request,
+    nombre_playlist: str = Form(...)
 ):
 
     access_token, error = obtener_access_token()
@@ -595,38 +479,18 @@ async def crear_playlist(
         """)
 
     # --------------------------------------------------------
-    # Recoger canciones seleccionadas
+    # Recoger dinámicamente todas las canciones seleccionadas
     # --------------------------------------------------------
+
+    form = await request.form()
 
     uris = []
 
-    posibles_canciones = [
-        cancion_0,
-        cancion_1,
-        cancion_2,
-        cancion_3,
-        cancion_4,
-        cancion_5,
-        cancion_6,
-        cancion_7,
-        cancion_8,
-        cancion_9,
-        cancion_10,
-        cancion_11,
-        cancion_12,
-        cancion_13,
-        cancion_14,
-        cancion_15,
-        cancion_16,
-        cancion_17,
-        cancion_18,
-        cancion_19
-    ]
+    for clave, valor in form.multi_items():
 
-    for uri in posibles_canciones:
+        if clave.startswith("cancion_") and valor:
 
-        if uri:
-            uris.append(uri)
+            uris.append(str(valor))
 
     # --------------------------------------------------------
     # Crear playlist
@@ -677,26 +541,79 @@ async def crear_playlist(
     # Añadir canciones
     # --------------------------------------------------------
 
-    add_result = None
+    resultados_anadidos = []
 
     if uris:
 
-        add_result = requests.post(
-            f"https://api.spotify.com/v1/playlists/{playlist_id}/items",
-            headers={
-                "Authorization": f"Bearer {access_token}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "uris": uris
-            }
-        )
+        # Spotify permite un máximo de 100 elementos
+        # por petición. Por eso dividimos automáticamente
+        # playlists grandes en bloques de 100.
+
+        for inicio in range(0, len(uris), 100):
+
+            bloque = uris[inicio:inicio + 100]
+
+            add_result = requests.post(
+                f"https://api.spotify.com/v1/playlists/{playlist_id}/items",
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "uris": bloque
+                }
+            )
+
+            resultados_anadidos.append(add_result)
+
+            if add_result.status_code != 201:
+
+                return HTMLResponse(f"""
+                <html>
+
+                <body>
+
+                    <h2>Playlist creada, pero hubo un error</h2>
+
+                    <p>
+                        La playlist se ha creado correctamente,
+                        pero Spotify no pudo añadir todas las canciones.
+                    </p>
+
+                    <p>
+                        <strong>Status Spotify:</strong>
+                        {add_result.status_code}
+                    </p>
+
+                    <pre>
+{html.escape(add_result.text)}
+                    </pre>
+
+                    <p>
+                        <a
+                            href="{html.escape(spotify_url)}"
+                            target="_blank"
+                        >
+                            Abrir playlist en Spotify
+                        </a>
+                    </p>
+
+                    <p>
+                        <a href="/">
+                            Crear otra playlist
+                        </a>
+                    </p>
+
+                </body>
+
+                </html>
+                """)
 
     # --------------------------------------------------------
     # Resultado
     # --------------------------------------------------------
 
-    if add_result is not None and add_result.status_code == 201:
+    if uris:
 
         mensaje = f"""
         <p>
@@ -706,34 +623,12 @@ async def crear_playlist(
         </p>
         """
 
-    elif not uris:
+    else:
 
         mensaje = """
         <p>
             No se seleccionó ninguna canción.
         </p>
-        """
-
-    else:
-
-        mensaje = f"""
-        <p>
-            <strong>
-                Error añadiendo las canciones.
-            </strong>
-        </p>
-
-        <p>
-            <strong>
-                Status Spotify:
-            </strong>
-
-            {add_result.status_code}
-        </p>
-
-        <pre>
-{html.escape(add_result.text)}
-        </pre>
         """
 
     return HTMLResponse(f"""
