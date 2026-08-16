@@ -1003,7 +1003,7 @@ async def crear_playlist(
         """
 
 
-    return HTMLResponse(f"""
+        return HTMLResponse(f"""
 
     <html>
 
@@ -1012,50 +1012,51 @@ async def crear_playlist(
         <meta name="viewport"
               content="width=device-width, initial-scale=1.0">
 
+        <title>Playlist creada</title>
+
         <link rel="icon"
               href="https://losperrostratos.es/wp-content/uploads/2025/11/cropped-bk2a2736.jpg">
 
-        <title>Playlist creada</title>
-
         <style>
-
-            * {{
-                box-sizing: border-box;
-            }}
 
             body {{
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 18px;
 
-                margin: 0;
-                padding: 20px;
-
-                color: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
 
                 min-height: 100svh;
+
+                padding: 15px;
 
                 position: relative;
             }}
 
+            /* Fondo + overlay */
             body::before {{
                 content: "";
                 position: fixed;
                 inset: 0;
 
-                background-image: url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                background-image:
+                    url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
 
-                box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.5);
+                box-shadow:
+                    inset 0 0 0 1000px rgba(0,0,0,0.5);
 
                 z-index: -1;
             }}
 
             .container {{
                 width: 100%;
-                max-width: 700px;
-                margin: 0 auto;
+                max-width: 600px;
+                color: white;
             }}
 
             h2 {{
@@ -1063,22 +1064,17 @@ async def crear_playlist(
                 margin-bottom: 30px;
             }}
 
-            .resultado {{
-                background: rgba(255,255,255,0.92);
-                color: #222;
-
-                border-radius: 8px;
-
-                padding: 20px;
-
-                text-align: center;
+            .nombre {{
+                margin-bottom: 25px;
             }}
 
+            /* Botón Spotify */
             .boton {{
                 display: block;
+
                 text-align: center;
 
-                background: #1DB954;
+                background: #7b2727;
                 color: white;
 
                 padding: 14px;
@@ -1092,7 +1088,21 @@ async def crear_playlist(
                 font-size: 18px;
             }}
 
+            .boton:hover {{
+                opacity: 0.9;
+            }}
+
+            .mensaje {{
+                text-align: center;
+                margin: 25px 0;
+            }}
+
             .volver {{
+                text-align: center;
+                margin-top: 30px;
+            }}
+
+            .volver a {{
                 color: white;
             }}
 
@@ -1106,19 +1116,25 @@ async def crear_playlist(
 
             <h2>Playlist creada</h2>
 
-            <div class="resultado">
+            <p class="nombre">
+                <strong>Nombre:</strong>
+                {html.escape(nombre_playlist)}
+            </p>
 
-                <p>
-                    <strong>Nombre:</strong>
-                    {html.escape(nombre_playlist)}
-                </p>
+            <a
+                class="boton"
+                href="{html.escape(spotify_url)}"
+                target="_blank"
+            >
+                Abrir playlist en Spotify
+            </a>
 
+            <div class="mensaje">
                 {mensaje}
-
             </div>
 
-            <p>
-                <a class="volver" href="/">
+            <p class="volver">
+                <a href="/">
                     Crear otra playlist
                 </a>
             </p>
