@@ -53,9 +53,7 @@ async def home():
 
 <h1>Playlist Creator</h1>
 
-<crear_playlist/
-
-    <label>Nombre de la playlist</label><br>
+<form action="/crear_playlist/" method="a playlist</label><br>
 
     <input
         type="text"
