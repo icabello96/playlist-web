@@ -52,12 +52,16 @@ async def home():
                 position: fixed;
                 inset: 0;
 
-                background-image: url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                background-image: url(
+                    'https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg'
+                );
+
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
 
-                box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.5);
+                box-shadow:
+                    inset 0 0 0 1000px rgba(0,0,0,0.5);
 
                 z-index: -1;
             }
@@ -67,7 +71,8 @@ async def home():
                 max-width: 600px;
             }
 
-            input, textarea {
+            input,
+            textarea {
                 width: 100%;
                 font-size: 18px;
                 padding: 10px;
@@ -102,7 +107,8 @@ async def home():
                 opacity: 0.9;
             }
 
-            h1, label {
+            h1,
+            label {
                 color: white;
                 font-weight: bold;
             }
@@ -123,7 +129,8 @@ async def home():
                     max-width: 100%;
                 }
 
-                input, textarea {
+                input,
+                textarea {
                     font-size: 20px;
                     padding: 12px;
                 }
@@ -282,7 +289,9 @@ async def buscar_canciones(
                     inset: 0;
 
                     background-image:
-                        url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                        url(
+                            'https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg'
+                        );
 
                     background-size: cover;
                     background-position: center;
@@ -294,7 +303,9 @@ async def buscar_canciones(
                     z-index: -1;
                 }}
 
-                h2, p, pre {{
+                h2,
+                p,
+                pre {{
                     color: white;
                 }}
 
@@ -321,6 +332,11 @@ async def buscar_canciones(
         </html>
         """)
 
+
+    # ========================================================
+    # LIMPIAR LISTA DE CANCIONES
+    # ========================================================
+
     lista_canciones = [
         linea.strip()
         for linea in canciones.splitlines()
@@ -333,6 +349,11 @@ async def buscar_canciones(
         <h2>No se han introducido canciones</h2>
         <p><a href="/">Volver</a></p>
         """)
+
+
+    # ========================================================
+    # BUSCAR EN SPOTIFY
+    # ========================================================
 
     headers = {
         "Authorization": f"Bearer {access_token}"
@@ -364,10 +385,9 @@ async def buscar_canciones(
 
         data = search.json()
 
-        tracks = data.get(
-            "tracks", {}
-        ).get(
-            "items", []
+        tracks = (
+            data.get("tracks", {})
+            .get("items", [])
         )
 
         opciones = []
@@ -398,17 +418,26 @@ async def buscar_canciones(
 
     bloques = ""
 
-    # "Desliza →" solo aparece una vez
     primer_desliza = True
 
     for resultado in resultados:
 
         indice = resultado["indice"]
+        entrada = resultado["entrada"]
         opciones = resultado["opciones"]
 
-        bloques += """
+        bloques += f"""
         <section class="cancion">
+
+            <div class="cancion-original">
+                {html.escape(entrada)}
+            </div>
         """
+
+
+        # ----------------------------------------------------
+        # SIN RESULTADOS
+        # ----------------------------------------------------
 
         if not opciones:
 
@@ -418,11 +447,17 @@ async def buscar_canciones(
                 </p>
             """
 
+
+        # ----------------------------------------------------
+        # RESULTADOS
+        # ----------------------------------------------------
+
         else:
 
             bloques += """
                 <div class="carrusel">
             """
+
 
             for numero, opcion in enumerate(opciones):
 
@@ -439,19 +474,23 @@ async def buscar_canciones(
                     opcion["artista"]
                 )
 
-                # Primera opción seleccionada por defecto
+
+                # Primera opción seleccionada
                 checked = ""
 
                 if numero == 0:
                     checked = "checked"
 
+
                 bloques += f"""
 
-                    <label class="opcion">
+                    <label
+                        class="opcion"
+                        onclick="alternarSeleccion(event, this)"
+                    >
 
                         <input
                             type="radio"
-                            class="selector-cancion"
                             name="cancion_{indice}"
                             value="{uri}"
                             {checked}
@@ -473,11 +512,16 @@ async def buscar_canciones(
 
                 """
 
+
             bloques += """
                 </div>
             """
 
-            # "Desliza →" solo aparece una vez
+
+            # ------------------------------------------------
+            # INDICADOR "DESLIZA"
+            # ------------------------------------------------
+
             if len(opciones) > 3 and primer_desliza:
 
                 bloques += """
@@ -487,6 +531,7 @@ async def buscar_canciones(
                 """
 
                 primer_desliza = False
+
 
         bloques += """
         </section>
@@ -517,6 +562,11 @@ async def buscar_canciones(
                 box-sizing: border-box;
             }}
 
+
+            /* =================================================
+               CUERPO
+               ================================================= */
+
             body {{
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 18px;
@@ -531,13 +581,20 @@ async def buscar_canciones(
                 position: relative;
             }}
 
+
+            /* =================================================
+               FONDO
+               ================================================= */
+
             body::before {{
                 content: "";
                 position: fixed;
                 inset: 0;
 
                 background-image:
-                    url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                    url(
+                        'https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg'
+                    );
 
                 background-size: cover;
                 background-position: center;
@@ -549,6 +606,11 @@ async def buscar_canciones(
                 z-index: -1;
             }}
 
+
+            /* =================================================
+               CONTENEDOR
+               ================================================= */
+
             .container {{
                 width: 100%;
                 max-width: 700px;
@@ -556,28 +618,60 @@ async def buscar_canciones(
                 margin: 0 auto;
             }}
 
+
+            /* =================================================
+               TÍTULO
+               ================================================= */
+
             h1 {{
                 text-align: center;
                 color: white;
+
                 margin-bottom: 8px;
             }}
+
 
             .intro {{
                 text-align: center;
                 color: white;
+
                 margin-bottom: 20px;
             }}
 
+
             /* =================================================
-               CADA CARRUSEL
+               CADA CANCIÓN
                ================================================= */
 
             .cancion {{
-                margin-bottom: 12px;
+                margin-bottom: 18px;
             }}
+
+
+            /* =================================================
+               TEXTO ORIGINAL
+               ================================================= */
+
+            .cancion-original {{
+                color: white;
+
+                font-weight: bold;
+
+                font-size: 16px;
+
+                margin-bottom: 6px;
+
+                padding-left: 2px;
+            }}
+
+
+            /* =================================================
+               CARRUSEL
+               ================================================= */
 
             .carrusel {{
                 display: flex;
+
                 gap: 8px;
 
                 overflow-x: auto;
@@ -589,6 +683,7 @@ async def buscar_canciones(
                 scrollbar-width: thin;
             }}
 
+
             /* =================================================
                TARJETAS
                ================================================= */
@@ -599,6 +694,7 @@ async def buscar_canciones(
                 min-height: 72px;
 
                 border: 1px solid #ddd;
+
                 border-radius: 7px;
 
                 padding: 9px;
@@ -610,18 +706,22 @@ async def buscar_canciones(
                 background: white;
 
                 display: flex;
+
                 align-items: flex-start;
 
                 gap: 7px;
 
                 transition:
                     background 0.15s ease,
-                    border 0.15s ease;
+                    border 0.15s ease,
+                    opacity 0.15s ease;
             }}
+
 
             .opcion:hover {{
                 background: #f7f7f7;
             }}
+
 
             /* =================================================
                OPCIÓN SELECCIONADA
@@ -629,20 +729,34 @@ async def buscar_canciones(
 
             .opcion:has(input:checked) {{
                 border: 2px solid #7b2727;
+
                 background: #f5e6e6;
             }}
 
+
+            /* =================================================
+               OPCIÓN DESELECCIONADA
+               ================================================= */
+
+            .opcion:not(:has(input:checked)) {{
+                opacity: 0.75;
+            }}
+
+
             .opcion input {{
                 margin-top: 2px;
+
                 flex-shrink: 0;
             }}
 
+
             /* =================================================
-               TEXTO
+               TEXTO DE LA OPCIÓN
                ================================================= */
 
             .texto-opcion {{
                 display: flex;
+
                 flex-direction: column;
 
                 gap: 3px;
@@ -650,16 +764,22 @@ async def buscar_canciones(
                 overflow: hidden;
             }}
 
+
             .texto-opcion strong {{
                 line-height: 1.2;
+
                 font-size: 14px;
             }}
 
+
             .artista {{
                 color: #666;
+
                 font-size: 13px;
+
                 line-height: 1.2;
             }}
+
 
             /* =================================================
                INDICADOR DEL CARRUSEL
@@ -677,6 +797,7 @@ async def buscar_canciones(
                 padding-right: 4px;
             }}
 
+
             /* =================================================
                ERRORES
                ================================================= */
@@ -692,6 +813,7 @@ async def buscar_canciones(
 
                 background: white;
             }}
+
 
             /* =================================================
                BOTÓN
@@ -717,17 +839,20 @@ async def buscar_canciones(
                 margin-top: 10px;
             }}
 
+
             button:hover {{
                 opacity: 0.9;
             }}
 
+
             /* =================================================
-               ENLACE
+               ENLACE VOLVER
                ================================================= */
 
             .volver {{
                 color: white;
             }}
+
 
             /* =================================================
                MÓVIL
@@ -739,6 +864,7 @@ async def buscar_canciones(
                     padding: 15px;
                 }}
 
+
                 .opcion {{
                     flex: 0 0 calc((100% - 8px) / 2);
 
@@ -747,19 +873,93 @@ async def buscar_canciones(
                     padding: 8px;
                 }}
 
+
                 .texto-opcion strong {{
                     font-size: 13px;
                 }}
 
+
                 .artista {{
                     font-size: 12px;
+                }}
+
+
+                .cancion-original {{
+                    font-size: 15px;
                 }}
 
             }}
 
         </style>
 
+
+        <script>
+
+            /*
+             * ==================================================
+             * SELECCIONAR / DESELECCIONAR
+             * ==================================================
+             *
+             * Comportamiento:
+             *
+             * 1. Primera opción seleccionada por defecto.
+             *
+             * 2. Al pulsar otra opción:
+             *       -> se selecciona esa.
+             *
+             * 3. Al pulsar de nuevo la opción seleccionada:
+             *       -> se deselecciona.
+             *
+             * Esto permite que una canción no se incluya
+             * finalmente en la playlist.
+             */
+
+            function alternarSeleccion(event, tarjeta) {{
+
+                event.preventDefault();
+
+                const radio =
+                    tarjeta.querySelector('input[type="radio"]');
+
+
+                if (!radio) {{
+                    return;
+                }}
+
+
+                /*
+                 * Si ya estaba seleccionada,
+                 * la deseleccionamos.
+                 */
+
+                if (radio.checked) {{
+
+                    radio.checked = false;
+
+                }}
+
+
+                /*
+                 * Si no estaba seleccionada,
+                 * la seleccionamos.
+                 *
+                 * Al ser radio buttons con el mismo
+                 * name, Spotify/HTML deseleccionará
+                 * automáticamente la anterior.
+                 */
+
+                else {{
+
+                    radio.checked = true;
+
+                }}
+
+            }}
+
+        </script>
+
     </head>
+
 
     <body>
 
@@ -769,12 +969,16 @@ async def buscar_canciones(
 
             <p class="intro">
                 Revisa que esté seleccionada la versión correcta.
+                Puedes pulsar de nuevo una versión seleccionada
+                para excluir esa canción.
             </p>
+
 
             <form
                 action="/crear_playlist/"
                 method="post"
             >
+
 
                 <input
                     type="hidden"
@@ -782,57 +986,32 @@ async def buscar_canciones(
                     value="{html.escape(nombre_playlist, quote=True)}"
                 >
 
+
                 {bloques}
+
 
                 <button type="submit">
                     Crear playlist
                 </button>
 
+
             </form>
+
 
             <br>
 
+
             <p>
+
                 <a class="volver" href="/">
                     Empezar de nuevo
                 </a>
+
             </p>
 
+
         </div>
-<script>
 
-// Inicializar radios seleccionados por defecto
-document.querySelectorAll('.selector-cancion').forEach(radio => {
-    radio.dataset.seleccionado = radio.checked ? "true" : "false";
-});
-
-document.querySelectorAll('.selector-cancion').forEach(radio => {
-
-    radio.addEventListener('click', function () {
-
-        const nombre = this.name;
-        const estabaSeleccionado = this.dataset.seleccionado === "true";
-
-        // Resetear el estado visual del grupo
-        document.querySelectorAll(`input[name="${nombre}"]`).forEach(r => {
-            r.dataset.seleccionado = "false";
-        });
-
-        if (estabaSeleccionado) {
-            // Segunda pulsación: deseleccionar
-            this.checked = false;
-            this.dataset.seleccionado = "false";
-        } else {
-            // Seleccionar esta opción
-            this.checked = true;
-            this.dataset.seleccionado = "true";
-        }
-
-    });
-
-});
-
-</script>
     </body>
 
     </html>
@@ -878,7 +1057,9 @@ async def crear_playlist(
                     inset: 0;
 
                     background-image:
-                        url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                        url(
+                            'https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg'
+                        );
 
                     background-size: cover;
                     background-position: center;
@@ -890,7 +1071,9 @@ async def crear_playlist(
                     z-index: -1;
                 }}
 
-                h2, p, pre {{
+                h2,
+                p,
+                pre {{
                     color: white;
                 }}
 
@@ -919,7 +1102,7 @@ async def crear_playlist(
 
 
     # ========================================================
-    # RECOGER TODAS LAS CANCIONES SELECCIONADAS
+    # RECOGER CANCIONES SELECCIONADAS
     # ========================================================
 
     form = await request.form()
@@ -953,6 +1136,7 @@ async def crear_playlist(
         }
     )
 
+
     if playlist.status_code != 201:
 
         return HTMLResponse(f"""
@@ -979,7 +1163,9 @@ async def crear_playlist(
                     inset: 0;
 
                     background-image:
-                        url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                        url(
+                            'https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg'
+                        );
 
                     background-size: cover;
                     background-position: center;
@@ -991,7 +1177,9 @@ async def crear_playlist(
                     z-index: -1;
                 }}
 
-                h2, p, pre {{
+                h2,
+                p,
+                pre {{
                     color: white;
                 }}
 
@@ -1030,7 +1218,11 @@ async def crear_playlist(
 
     playlist_id = playlist_data.get("id")
 
-    # URL de la playlist para el botón final
+
+    # ========================================================
+    # URL DE LA PLAYLIST
+    # ========================================================
+
     spotify_url = (
         playlist_data
         .get("external_urls", {})
@@ -1051,14 +1243,17 @@ async def crear_playlist(
             add_result = requests.post(
                 f"https://api.spotify.com/v1/playlists/"
                 f"{playlist_id}/items",
+
                 headers={
                     "Authorization": f"Bearer {access_token}",
                     "Content-Type": "application/json"
                 },
+
                 json={
                     "uris": bloque
                 }
             )
+
 
             if add_result.status_code != 201:
 
@@ -1086,7 +1281,9 @@ async def crear_playlist(
                             inset: 0;
 
                             background-image:
-                                url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                                url(
+                                    'https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg'
+                                );
 
                             background-size: cover;
                             background-position: center;
@@ -1103,7 +1300,9 @@ async def crear_playlist(
                             margin: auto;
                         }}
 
-                        h2, p, pre {{
+                        h2,
+                        p,
+                        pre {{
                             color: white;
                         }}
 
@@ -1137,8 +1336,10 @@ async def crear_playlist(
                         <pre>{html.escape(add_result.text)}</pre>
 
                         <p>
-                            <a href="{html.escape(spotify_url)}"
-                               target="_blank">
+                            <a
+                                href="{html.escape(spotify_url)}"
+                                target="_blank"
+                            >
                                 Abrir playlist en Spotify
                             </a>
                         </p>
@@ -1158,7 +1359,7 @@ async def crear_playlist(
 
 
     # ========================================================
-    # RESULTADO FINAL
+    # MENSAJE FINAL
     # ========================================================
 
     if uris:
@@ -1196,6 +1397,7 @@ async def crear_playlist(
         <link rel="icon"
               href="https://losperrostratos.es/wp-content/uploads/2025/11/cropped-bk2a2736.jpg">
 
+
         <style>
 
             body {{
@@ -1213,7 +1415,10 @@ async def crear_playlist(
                 position: relative;
             }}
 
-            /* Fondo + overlay */
+
+            /* =================================================
+               FONDO
+               ================================================= */
 
             body::before {{
                 content: "";
@@ -1221,7 +1426,9 @@ async def crear_playlist(
                 inset: 0;
 
                 background-image:
-                    url('https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg');
+                    url(
+                        'https://losperrostratos.es/wp-content/uploads/2026/01/zevento.jpeg'
+                    );
 
                 background-size: cover;
                 background-position: center;
@@ -1233,6 +1440,11 @@ async def crear_playlist(
                 z-index: -1;
             }}
 
+
+            /* =================================================
+               CONTENEDOR
+               ================================================= */
+
             .container {{
                 width: 100%;
                 max-width: 600px;
@@ -1240,16 +1452,17 @@ async def crear_playlist(
                 color: white;
             }}
 
+
             h2 {{
                 text-align: center;
+
                 margin-bottom: 30px;
             }}
 
-            .nombre {{
-                margin-bottom: 25px;
-            }}
 
-            /* Botón Spotify */
+            /* =================================================
+               BOTÓN SPOTIFY
+               ================================================= */
 
             .boton {{
                 display: block;
@@ -1257,6 +1470,7 @@ async def crear_playlist(
                 text-align: center;
 
                 background: #7b2727;
+
                 color: white;
 
                 padding: 14px;
@@ -1270,19 +1484,33 @@ async def crear_playlist(
                 font-size: 18px;
             }}
 
+
             .boton:hover {{
                 opacity: 0.9;
             }}
 
+
+            /* =================================================
+               MENSAJE
+               ================================================= */
+
             .mensaje {{
                 text-align: center;
+
                 margin: 25px 0;
             }}
 
+
+            /* =================================================
+               VOLVER
+               ================================================= */
+
             .volver {{
                 text-align: center;
+
                 margin-top: 30px;
             }}
+
 
             .volver a {{
                 color: white;
@@ -1292,11 +1520,15 @@ async def crear_playlist(
 
     </head>
 
+
     <body>
 
         <div class="container">
 
-            <h2>Playlist creada</h2>
+            <h2>
+                Playlist creada
+            </h2>
+
 
             <a
                 class="boton"
@@ -1306,9 +1538,11 @@ async def crear_playlist(
                 Abrir playlist en Spotify
             </a>
 
+
             <div class="mensaje">
                 {mensaje}
             </div>
+
 
             <p class="volver">
 
