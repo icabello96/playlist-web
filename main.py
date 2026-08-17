@@ -451,6 +451,7 @@ async def buscar_canciones(
 
                         <input
                             type="radio"
+                            class="selector-cancion"
                             name="cancion_{indice}"
                             value="{uri}"
                             {checked}
@@ -798,7 +799,40 @@ async def buscar_canciones(
             </p>
 
         </div>
+<script>
 
+// Inicializar radios seleccionados por defecto
+document.querySelectorAll('.selector-cancion').forEach(radio => {
+    radio.dataset.seleccionado = radio.checked ? "true" : "false";
+});
+
+document.querySelectorAll('.selector-cancion').forEach(radio => {
+
+    radio.addEventListener('click', function () {
+
+        const nombre = this.name;
+        const estabaSeleccionado = this.dataset.seleccionado === "true";
+
+        // Resetear el estado visual del grupo
+        document.querySelectorAll(`input[name="${nombre}"]`).forEach(r => {
+            r.dataset.seleccionado = "false";
+        });
+
+        if (estabaSeleccionado) {
+            // Segunda pulsación: deseleccionar
+            this.checked = false;
+            this.dataset.seleccionado = "false";
+        } else {
+            // Seleccionar esta opción
+            this.checked = true;
+            this.dataset.seleccionado = "true";
+        }
+
+    });
+
+});
+
+</script>
     </body>
 
     </html>
